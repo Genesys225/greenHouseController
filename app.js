@@ -1,16 +1,19 @@
 var express = require('express');
+
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
-var routes = require('./routes/index');
+var routes = require('./routes/index')//(io);
 var users = require('./routes/users');
 
 var app = express();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
+//new one
+//var index_routes = require('./routes/')(io);
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -115,7 +118,7 @@ var mysqlClass = require('./models/mysql_model.js')
 var debug = require('debug')('generated-express-app');
 //var app = require('../app');
 
-app.set('port', process.env.PORT || 80);
+app.set('port', process.env.PORT || 90);
 
 var server = app.listen(app.get('port'), function () {
     debug('Express server listening on port ' + server.address().port);
@@ -123,9 +126,20 @@ var server = app.listen(app.get('port'), function () {
 
 
 var io = require('socket.io').listen(server);
-var socketManager = require('./models/sockets_manager.js')
-socketManager.liveSensorsMonitoring(io, 'xxxxxx')
+var socketManager = require('./models/sockets_manager.js');
+var sensorManager = require('./models/sensor_manager.js');
 
+for(var i =0;i<10000;i++){
+    (function(i){
+    setTimeout(function(){
+        //console.log('f')
+        socketManager.liveSensorsMonitoring(io, 'xxxxxx')
+    },100*i)
+})(i)
+}
+
+
+sensorManager.startMonitorMock(io, 'xxxxxx')
 
 
 module.exports = app;
